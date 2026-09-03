@@ -124,7 +124,7 @@ Perubahan pada tampilan aplikasi dapat diterapkan menggunakan hot reload.
 
 ![Hasil Hot Reload](screenshots/Praktikum.png)
 
-> Simpan screenshot dengan nama `hot-reload.png` di folder `screenshots`.
+> Hasil Screenshot Praktikum.
 
 ---
 
@@ -138,7 +138,7 @@ Tambahkan screenshot aplikasi pada bagian berikut:
 
 ![Hasil Aplikasi](screenshots/Praktikum.png)
 
-> Simpan screenshot hasil aplikasi dengan nama `hasil-aplikasi.png` di folder `screenshots`.
+> Hasil Screenshot Praktikum.
 
 ---
 
@@ -256,6 +256,8 @@ Pada mini assignment dibuat aplikasi **Profil Mahasiswa** menggunakan Flutter.
 ### Screenshot
 
 ![Profil Mahasiswa](screenshots/Tugas.png)
+
+> Hasil Screenshot Tugas.
 
 ---
 
