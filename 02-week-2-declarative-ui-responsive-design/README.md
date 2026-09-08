@@ -1,4 +1,4 @@
-# Laporan Praktikum #02 — Declarative UI & Responsive Design
+# Laporan Praktikum 02 — Declarative UI & Responsive Design
 
 | Keterangan | Data |
 |---|---|
