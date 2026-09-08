@@ -1,10 +1,11 @@
 # Laporan Praktikum #02 — Declarative UI & Responsive Design
 
-**Nama** : Sileysa Faedatul Nuraini
-**NIM** : 244107020231
-**Kelas** : TI-3F
-**Mata Kuliah** : Pemrograman Mobile
-**Minggu ke-** : 2
+| Keterangan | Data |
+|---|---|
+| Nama | Sileysa Faedatul Nuraini|
+| NIM | 244107020231 |
+| Mata Kuliah | Pemrograman Mobile |
+| Pertemuan | Minggu 2 |
 
 ---
 
@@ -25,21 +26,33 @@ Membuat project baru dan mengisi `lib/main.dart` dengan `ProfileApp` yang menamp
 **Eksperimen warm-up yang dilakukan:**
 
 1. Menghapus `Expanded` pada baris nama 
+
 ![Expanded](screenshots/4_1.png)
+
 2. Mengganti `mainAxisSize: MainAxisSize.min` ke nilai default 
+
 ![Default](screenshots/4_2.png)
+
 3. Menambahkan baris data baru (`Email`) dengan pola `Row` + `Expanded` 
+
 ![Email](screenshots/4_3.png)
 
 ## 3. Eksperimen Layout
 
 1. Mengubah breakpoint dari `700` ke nilai lain 
+
 ![breakpoint](screenshots/5_1.png)
+
 2. Mengubah `themeMode` menjadi `ThemeMode.dark`, lalu mengembalikan ke `ThemeMode.system` 
+
 ![themeMode](screenshots/5_2.png)
+
 3. Menguji aplikasi pada beberapa ukuran layar emulator 
+
 ![tablet](screenshots/5_3.png)
+
 4. Menambahkan `Semantics`/label bermakna untuk elemen penting bagi screen reader 
+
 ![semantics](screenshots/5_4.png)
 
 ## 4. Tugas Utama — Academic Overview Dashboard
