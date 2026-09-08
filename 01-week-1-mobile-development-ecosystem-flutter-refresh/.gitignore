@@ -46,3 +46,21 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Folder
+.dart_tool/
+.idea/
+build/
+android/
+ios/
+linux/
+macos/
+web/
+windows/
+
+# File
+.metadata
+analysis_options.yaml
+my_first_app.iml
+pubspec.lock
+pubspec.yaml
