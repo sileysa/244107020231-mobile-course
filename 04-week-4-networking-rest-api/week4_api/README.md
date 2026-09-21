@@ -62,6 +62,7 @@ Kode diperiksa dan disesuaikan kembali dengan struktur project, kebutuhan tugas,
 Dokumentasi AI Challenge dapat dilihat pada:
 
 ![Dokumentasi AI](docs/ai-challenge.md)
+```
 
 Dokumentasi tersebut berisi:
 
