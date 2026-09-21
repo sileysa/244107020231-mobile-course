@@ -62,8 +62,7 @@ Kode diperiksa dan disesuaikan kembali dengan struktur project, kebutuhan tugas,
 
 Dokumentasi AI Challenge dapat dilihat pada:
 
-[AI Testing](docs/ai-challenge.md)
-
+[AI Challenge](docs/ai-challenge.md)
 
 ## 6. Refactoring dan testing
 
