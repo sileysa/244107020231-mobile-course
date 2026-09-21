@@ -23,16 +23,16 @@ Jelaskan setiap bagian kode dalam komentar.
 
 Halaman Produk Loading
 
-![produk_loading](screenshots/produk_loading.png)
+![produk_loading](../screenshots/produk_loading.png)
 
 Halaman Produk Success
 
-![produk_success](screenshots/produk_success.png)
+![produk_success](../screenshots/produk_success.png)
 
 Halaman Produk Error
 
-![produk_error](screenshots/produk_error.png)
+![produk_error](../screenshots/produk_error.png)
 
 | Flutter Analyze | Flutter Test |
 |---|---|
-| ![Analyze](screenshots/flutter_analyze.png) | ![Test](screenshots/flutter_test.png) |
+| ![Analyze](../screenshots/flutter_analyze.png) | ![Test](../screenshots/flutter_test.png) |

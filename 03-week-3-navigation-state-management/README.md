@@ -62,7 +62,7 @@ Kode diperiksa dan disesuaikan kembali dengan struktur project, kebutuhan tugas,
 ```markdown
 Dokumentasi AI Challenge dapat dilihat pada:
 
-[Dokumentasi AI](docs/ai-challenge.md)
+[Dokumentasi AI](./docs/ai-challenge.md)
 ```
 
 ## 6. Refactoring dan testing
