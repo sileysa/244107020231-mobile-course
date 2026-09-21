@@ -59,11 +59,11 @@ Namun, kode dari AI tidak langsung digunakan seluruhnya.
 
 Kode diperiksa dan disesuaikan kembali dengan struktur project, kebutuhan tugas, dan hasil testing.
 
-```markdown
+
 Dokumentasi AI Challenge dapat dilihat pada:
 
-[Dokumentasi AI](./docs/ai-challenge.md)
-```
+[AI Testing](docs/ai-challenge.md)
+
 
 ## 6. Refactoring dan testing
 
