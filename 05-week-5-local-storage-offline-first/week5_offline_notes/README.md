@@ -91,13 +91,13 @@ Mode Pesawat
 |---|---|
 | ![PostON](screenshots/PesPostOnline.png) | ![PostOFF](screenshots/PesPostsOffline.png) |
 
-1. Mengapa daftar catatan tidak boleh disimpan di SharedPreferences? Apa yang rusak jika aturan ini dilanggar?
+## 1. Mengapa daftar catatan tidak boleh disimpan di SharedPreferences? Apa yang rusak jika aturan ini dilanggar?
 
 Daftar catatan tidak cocok disimpan di SharedPreferences karena catatan memiliki struktur data yang lebih kompleks dan jumlah datanya dapat terus bertambah. SQLite lebih sesuai karena mendukung tabel, pencarian, pengurutan, pembaruan, penghapusan, dan query terhadap banyak data.
 
 Jika daftar catatan dipaksakan disimpan di SharedPreferences, data harus diubah menjadi string/JSON terlebih dahulu. Akibatnya proses CRUD menjadi lebih rumit dan tidak efisien. Semakin banyak catatan, semakin besar data yang harus dibaca dan ditulis sekaligus.
 
-2. Kapan cache-first cukup, dan kapan Anda membutuhkan strategi lain (misalnya network-first untuk data harga real-time)?
+## 2. Kapan cache-first cukup, dan kapan Anda membutuhkan strategi lain (misalnya network-first untuk data harga real-time)?
 
 Strategi cache-first cukup ketika pengguna tetap membutuhkan data walaupun tidak memiliki koneksi internet, sementara data tersebut tidak harus selalu terbaru setiap detik.
 
@@ -105,10 +105,10 @@ Namun, cache-first tidak selalu cocok untuk data yang membutuhkan informasi terb
 
 Untuk data tersebut dapat digunakan strategi seperti network-first, yaitu aplikasi mencoba mengambil data terbaru dari server terlebih dahulu. Jika jaringan gagal, aplikasi dapat menggunakan cache sebagai cadangan.
 
-3. Bagaimana dirty flag berubah menjadi antrean sync tanpa memblokir UI? Kapan antrean terpisah (tabel outbox) menjadi perlu?
+## 3. Bagaimana dirty flag berubah menjadi antrean sync tanpa memblokir UI? Kapan antrean terpisah (tabel outbox) menjadi perlu?
 
 Dirty flag dapat menjadi antrean sync sederhana karena setiap data yang berubah diberi tanda dirty = 1. Data tersebut tetap disimpan di SQLite sehingga UI tidak perlu menunggu server. Saat sinkronisasi dijalankan, aplikasi mengambil data yang dirty dan setelah berhasil mengubahnya menjadi dirty = 0. Jika kebutuhan sinkronisasi semakin kompleks, misalnya membutuhkan retry, pencatatan operasi create/update/delete, atau urutan perubahan, maka lebih tepat menggunakan tabel outbox terpisah.
 
-4. Bagian mana dari rekomendasi AI yang Anda tolak, dan mengapa?
+## 4. Bagian mana dari rekomendasi AI yang Anda tolak, dan mengapa?
 
 Salah satu pertimbangan yang tidak diikuti adalah menggunakan storage yang lebih kompleks hanya untuk mendapatkan fitur tambahan seperti reactive stream atau type-safety. Untuk project minggu ini, kompleksitas tersebut belum diperlukan karena kebutuhan aplikasi masih dapat dipenuhi menggunakan SQLite melalui repository.
