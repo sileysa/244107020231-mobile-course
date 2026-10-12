@@ -114,3 +114,68 @@ Perbaikan yang dilakukan antara lain:
    Draf AI tidak dianggap benar hanya berdasarkan kode. Perilaku FCM dibuktikan melalui pengujian langsung pada emulator untuk kondisi foreground, background, dan terminated.
 
 Kesimpulannya, AI digunakan sebagai alat untuk membantu membuat draf awal, tetapi keputusan akhir tetap dilakukan berdasarkan hasil analisis kode dan pengujian aplikasi.
+
+## Praktikum Minggu 7 — Audit Layer Project Lama
+
+Project yang diaudit adalah `campus_notify` dari Minggu 6. Audit ini hanya memetakan kode yang sudah ada; belum ada pemindahan atau penambahan fitur.
+
+### Pemetaan file ke layer
+
+| File | Layer saat ini | Masalah / catatan |
+|---|---|---|
+| `lib/main.dart` | Composition root / bootstrap | Menginisialisasi Firebase, notifikasi, dan GoRouter sekaligus. Wiring aplikasi sebaiknya dipisahkan dari konfigurasi rute agar entry point lebih tipis. |
+| `lib/routes.dart` | Presentation / navigasi | Berisi konstanta dan pembentuk URL; tidak ada masalah layer yang berarti. Konfigurasi GoRouter sendiri masih dibuat di `main.dart`. |
+| `lib/pages/login_page.dart` | Presentation | Mengelola input dan menampilkan error dari provider. Tidak mengakses jaringan atau storage langsung. |
+| `lib/pages/home_page.dart` | Presentation | Mengirim aksi logout ke provider dan navigasi ke rute pengumuman. Tidak mengakses jaringan atau melakukan parsing/formatting data. |
+| `lib/pages/announcement_page.dart` | Presentation | Menampilkan konten statis. Belum ada sumber data atau logika pengumuman yang perlu dipindahkan. |
+| `lib/pages/debug_fcm_page.dart` | Presentation | Memanggil service FCM/notifikasi secara langsung melalui `push_service.dart`; koordinasi izin dan token sebaiknya lewat provider/use case. Token FCM juga ditampilkan di UI debug. |
+| `lib/providers/auth_provider.dart` | Presentation (state) + DI | Provider membuat `AuthRepository()` konkret dan `TokenStore()` langsung. Repository belum berupa kontrak domain sehingga dependency belum dapat diganti lewat abstraksi. |
+| `lib/data/auth_repository.dart` | Data (kontrak dan implementasi tercampur) | Kelas repository sekaligus mengimplementasikan perilaku login/refresh dan validasi kredensial demo. Pisahkan interface domain dari implementasi data; validasi bisnis jangan tertanam dalam adapter data. |
+| `lib/data/token_store.dart` | Data / infrastructure | Implementasi storage token bergantung langsung pada `FlutterSecureStorage`; pertahankan akses platform ini di data source, bukan di widget/provider state. |
+| `lib/data/api_client.dart` | Data / infrastructure | Mengonfigurasi Dio dan interceptor refresh. File ini belum ditemukan pemanggilnya di `lib`; header otorisasi pada request dan retry juga masih placeholder. |
+| `lib/data/api_errors.dart` | Data / infrastructure | Mengubah `DioException` menjadi teks UI langsung. Lebih baik petakan error teknis menjadi failure domain, lalu biarkan presentation menentukan pesan. |
+| `lib/messaging/push_service.dart` | Infrastructure / integrasi Firebase | Menggabungkan FCM, local notification, parsing route dari payload, dan callback navigasi. Presentation memanggilnya langsung dari halaman debug; batas antara adapter notifikasi dan navigasi masih tercampur. |
+
+### Hasil pencarian tiga pelanggaran klasik
+
+Pencarian dilakukan pada `lib/pages` dan `lib/providers` sesuai kategori tugas. Folder `lib/widgets` belum ada.
+
+| Kategori | Hasil | Temuan |
+|---|---:|---|
+| Akses jaringan/database/storage langsung di widget (`Dio`, `http`, database, secure storage) | 0 | Tidak ada kecocokan langsung pada halaman. `DebugFcmPage` tetap mengoordinasikan service FCM secara tidak langsung; pola grep tersebut tidak mendeteksi pemanggilan service. |
+| Parsing/formatting data dalam widget (`DateFormat`, `jsonDecode`, `toIso8601String`) | 0 | Tidak ada kecocokan pada halaman. |
+| Instansiasi repository/client (`Repository(`, `Dio(BaseOptions`) | 1 | `lib/providers/auth_provider.dart` membuat `AuthRepository()` pada provider. Ini berfungsi sebagai registrasi DI sederhana, tetapi masih terikat ke kelas konkret; pindahkan wiring ke composition/DI dan gunakan kontrak domain. Tidak ada instansiasi Dio di presentation. |
+
+`TokenStore()` juga dibuat langsung oleh provider, tetapi tidak cocok dengan pola grep `Repository(`. Catatan ini tetap perlu ditangani saat pemisahan DI.
+
+### Struktur target untuk fitur yang sudah ada
+
+Fitur autentikasi yang sudah berjalan menjadi target pemisahan; skeleton ini bukan permintaan untuk menambah fitur:
+
+```text
+lib/
+├── core/
+│   ├── failures.dart
+│   └── providers.dart                 # registrasi dependency lintas fitur
+├── features/
+│   └── auth/
+│       ├── domain/
+│       │   ├── entities/auth_session.dart
+│       │   ├── repositories/auth_repository.dart  # interface
+│       │   └── usecases/
+│       │       ├── login.dart
+│       │       └── refresh_session.dart
+│       ├── data/
+│       │   ├── datasources/token_store.dart
+│       │   └── repositories/auth_repository_impl.dart
+│       └── presentation/
+│           ├── providers/auth_provider.dart
+│           └── pages/login_page.dart
+├── pages/
+│   ├── home_page.dart
+│   ├── announcement_page.dart
+│   └── debug_fcm_page.dart
+└── routes.dart
+```
+
+`announcement_page.dart` tetap menjadi halaman presentation karena kontennya masih statis. File atau lapisan data baru untuk pengumuman tidak dibuat pada audit ini.
