@@ -97,6 +97,19 @@ ke folder Week 7. Screenshot ini mendokumentasikan state aplikasi (misalnya sebe
 sync dan online/offline), **bukan pasangan tangkapan khusus sebelum/sesudah perubahan
 arsitektur Week 7**.
 
+### Screenshot aplikasi Week 7 — diambil 13 Oktober 2026
+
+Screenshot berikut baru diambil langsung dari aplikasi Week 7 yang sedang berjalan di
+emulator Android pada 13 Oktober 2026. Ini adalah bukti kondisi **after refactor**.
+
+| Daftar notes | Detail note |
+|---|---|
+| ![Daftar notes Week 7, 13 Oktober 2026](screenshots/notes-after-refactor-2026-10-13.png) | ![Detail note Week 7, 13 Oktober 2026](screenshots/note-detail-after-refactor-2026-10-13.png) |
+
+| Posts online | Posts dengan Force Offline aktif |
+|---|---|
+| ![Posts online Week 7, 13 Oktober 2026](screenshots/posts-after-refactor-2026-10-13.png) | ![Posts offline Week 7, 13 Oktober 2026](screenshots/posts-offline-after-refactor-2026-10-13.png) |
+
 ### Notes sebelum dan sesudah sinkronisasi
 
 | Sebelum sync | Sesudah sync |
@@ -125,9 +138,10 @@ Screenshot `Prak3_3.png`, `Prak3_4.png`, dan `Prak3_5.png` juga tersedia di fold
 | ![Flutter analyze](screenshots/Analyze.png) | ![Test model](screenshots/Test.png) | ![Semua test](screenshots/Test2.png) |
 
 Catatan: screenshot terminal tersebut merupakan dokumentasi yang sudah tersedia di project
-asal. Verifikasi ulang project Week 7 dilakukan dengan perintah di bawah. Screenshot khusus
-before/after refactor arsitektur dan pengujian manual pada emulator belum direkam; jangan
-menganggap gambar state aplikasi di atas sebagai bukti visual perubahan folder/kode.
+asal. Verifikasi ulang project Week 7 dilakukan dengan perintah di bawah. Screenshot aplikasi
+Week 7 di atas adalah bukti **after** dari emulator. Screenshot **before** refactor khusus belum
+tersedia sebagai pasangan yang dapat dibandingkan; screenshot lama di folder ini menunjukkan
+state fitur dari praktikum Minggu 5 dan bukan rekaman yang dibuat khusus sebelum refactor.
 
 ## Teknologi
 
@@ -182,7 +196,7 @@ Pemeriksaan di folder Week 7:
 3. `flutter analyze --no-pub`: **No issues found**.
 4. `flutter test --no-pub`: **8 tests passed**.
 
-Untuk screenshot khusus tugas, jalankan aplikasi versi asal dan versi Week 7 pada kondisi/data
-yang sebanding, ambil layar notes dan posts, lalu simpan masing-masing pasangan di
-`screenshots/` dengan nama `notes-before-refactor.png`, `notes-after-refactor.png`,
-`posts-before-refactor.png`, dan `posts-after-refactor.png`.
+Untuk melengkapi perbandingan before/after tugas, jalankan aplikasi versi asli Minggu 5 dari
+commit sebelum refactor dengan kondisi/data sebanding. Simpan tangkapan before, misalnya
+`notes-before-refactor.png`, `note-detail-before-refactor.png`, dan `posts-before-refactor.png`.
+Screenshot after bertanggal 13 Oktober 2026 sudah tersedia di atas.
