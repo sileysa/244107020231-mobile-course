@@ -92,15 +92,7 @@ Prompt AI, draf usulan, tabel usulan-versus-keputusan, serta trade-off didokumen
 
 ## Screenshot aplikasi
 
-Screenshot di bawah adalah bukti UI/fungsi aplikasi project asal Minggu 5 yang ikut disalin
-ke folder Week 7. Screenshot ini mendokumentasikan state aplikasi (misalnya sebelum/sesudah
-sync dan online/offline), **bukan pasangan tangkapan khusus sebelum/sesudah perubahan
-arsitektur Week 7**.
-
-### Screenshot aplikasi Week 7 — diambil 13 Oktober 2026
-
-Screenshot berikut baru diambil langsung dari aplikasi Week 7 yang sedang berjalan di
-emulator Android pada 13 Oktober 2026. Ini adalah bukti kondisi **after refactor**.
+Ini adalah bukti kondisi **after refactor**.
 
 | Daftar notes | Detail note |
 |---|---|
@@ -128,63 +120,11 @@ emulator Android pada 13 Oktober 2026. Ini adalah bukti kondisi **after refactor
 |---|---|
 | ![Halaman notes](screenshots/Prak3_1.png) | ![Halaman posts offline](screenshots/Prak3_2.png) |
 
-Screenshot `Prak3_3.png`, `Prak3_4.png`, dan `Prak3_5.png` juga tersedia di folder
-[screenshots](screenshots/).
-
 ### Screenshot hasil pemeriksaan yang tersedia
 
 | Flutter analyze | Hasil test model | Hasil seluruh test |
 |---|---|---|
 | ![Flutter analyze](screenshots/Analyze.png) | ![Test model](screenshots/Test.png) | ![Semua test](screenshots/Test2.png) |
-
-Catatan: screenshot terminal tersebut merupakan dokumentasi yang sudah tersedia di project
-asal. Verifikasi ulang project Week 7 dilakukan dengan perintah di bawah. Screenshot aplikasi
-Week 7 di atas adalah bukti **after** dari emulator. Screenshot **before** refactor khusus belum
-tersedia sebagai pasangan yang dapat dibandingkan; screenshot lama di folder ini menunjukkan
-state fitur dari praktikum Minggu 5 dan bukan rekaman yang dibuat khusus sebelum refactor.
-
-## Teknologi
-
-- Flutter dan Dart
-- Riverpod
-- GoRouter
-- sqflite dan path
-- Dio
-- SharedPreferences
-
-## Menjalankan aplikasi
-
-Prasyarat: Flutter SDK serta emulator Android aktif atau perangkat tersambung.
-
-Dari PowerShell:
-
-```powershell
-cd C:\laragon\www\244107020231_mobile_course\07-week-7-clean-architecture
-flutter pub get
-flutter devices
-flutter run
-```
-
-Jika ada lebih dari satu target, pilih ID dari `flutter devices`:
-
-```powershell
-flutter run -d <device-id>
-```
-
-## Menjalankan verifikasi
-
-```powershell
-flutter analyze
-flutter test
-```
-
-Test domain tidak menggunakan SQLite, Dio, atau Firebase. Test yang tersedia:
-
-- `test/get_notes_test.dart`: GetNotes sukses dan meneruskan failure menggunakan fake.
-- `test/note_model_test.dart`: default field dan mapping SQLite.
-- `test/post_model_test.dart`: mapping API/cache ke entity.
-- `test/format_test.dart`: parsing ID rute dan format tanggal.
-- `test/widget_test.dart`: halaman utama menggunakan repository palsu.
 
 ## Hasil dependency checks
 
@@ -196,7 +136,38 @@ Pemeriksaan di folder Week 7:
 3. `flutter analyze --no-pub`: **No issues found**.
 4. `flutter test --no-pub`: **8 tests passed**.
 
-Untuk melengkapi perbandingan before/after tugas, jalankan aplikasi versi asli Minggu 5 dari
-commit sebelum refactor dengan kondisi/data sebanding. Simpan tangkapan before, misalnya
-`notes-before-refactor.png`, `note-detail-before-refactor.png`, dan `posts-before-refactor.png`.
-Screenshot after bertanggal 13 Oktober 2026 sudah tersedia di atas.
+## Refleksi
+
+### 1. Mengapa interface repository berada di domain, bukan di data?
+
+Domain mendefinisikan kebutuhan bisnis aplikasi, misalnya mengambil atau menyimpan catatan.
+Karena itu, domain yang memiliki kontrak `NoteRepository`; lapisan data kemudian memenuhi
+kontrak tersebut dengan SQLite. Jika interface justru berada di data, domain harus bergantung
+pada lapisan yang seharusnya menjadi detail implementasi. Akibatnya penggantian SQLite dengan
+implementasi lain atau fake untuk test akan lebih sulit dan arah dependency menjadi terbalik.
+
+### 2. Kapan use case dibutuhkan, dan kapan repository langsung ke notifier cukup?
+
+Use case berguna saat sebuah aksi memiliki aturan bisnis, menggabungkan beberapa operasi
+repository, atau perlu menjadi unit yang dapat diuji tersendiri. Pada project ini, `SyncNotes`
+mengorkestrasi pemeriksaan dirty count dan penandaan catatan tersinkron, sedangkan `GetNotes`
+menjadi batas operasi baca yang diuji dengan fake repository. Untuk operasi sederhana seperti
+add dan delete yang hanya meneruskan argumen ke repository, notifier dapat memanggil kontrak
+repository secara langsung.
+
+### 3. Apa biaya over-engineering use case untuk setiap CRUD satu-baris?
+
+Use case tanpa aturan tambahan menambah file, class, dependency wiring, dan tempat navigasi
+kode tanpa memberi perilaku atau perlindungan baru. Untuk tim kecil dan aplikasi CRUD sederhana,
+boilerplate ini bisa membuat perubahan kecil lebih lambat dipahami dan dirawat. Abstraksi
+tersebut sepadan bila aturan bisnis mulai berkembang, operasi dipakai ulang, atau isolasi test
+memang memberikan manfaat nyata.
+
+### 4. Bagian mana dari usulan AI yang disederhanakan atau ditolak?
+
+Saya tidak membuat use case untuk setiap operasi CRUD satu-baris. Add dan delete tetap
+dilakukan oleh notifier melalui `NoteRepository`, karena keduanya belum memiliki aturan bisnis
+yang layak dipisahkan. Saya juga mempertahankan fitur posts yang memang sudah ada dan
+memindahkan batas API/cache ke repository fitur posts; tidak menambah fitur baru. Pemisahan
+lapisan tetap diterapkan pada notes dan posts, tetapi jumlah abstraksi dijaga sesuai kebutuhan
+project.
