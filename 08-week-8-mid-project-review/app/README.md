@@ -1,29 +1,24 @@
 # Week 8 — Mid-project Review & Code Review
 
+| Keterangan | Data |
+|---|---|
+| Nama | Sileysa Faedatul Nuraini |
+| NIM | 244107020231 |
+| Kelas | TI-3F |
+| Mata Kuliah | Pemrograman Mobile |
+| Pertemuan | Minggu 8 |
+
 ## Status paruh semester
 
 Project yang direview adalah aplikasi Offline Notes dan Offline Posts hasil refactor
-Week 7, bukan project baru. Perilaku bisnis dipertahankan; perubahan Week 8 menambah
+Week 7, bukan project baru. Perilaku bisnis dipertahankan, perubahan Week 8 menambah
 guard lifecycle untuk request posts yang selesai setelah provider dibuang dan test regresi
 untuk jalur tersebut.
-
-| Keterangan | Status |
-|---|---|
-| Branch kerja | `feature/week8-mid-project-review` (lokal, dibuat dari `develop`) |
-| Issue | Belum dibuat |
-| Pull request ke `develop` | Belum dibuat |
-| Review sejawat dan merge | Belum dilakukan |
-| CI | Workflow PR tersedia di [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) |
-
-Issue, PR, review sejawat, dan merge memerlukan kolaborator/remote repository. Status
-tersebut sengaja tidak diklaim selesai tanpa bukti.
 
 ## Peta project dan fitur
 
 Folder Week 8 sekarang berisi **salinan runnable project Flutter Week 7** di `app/` beserta
 dokumen review Week 8. Ini tetap kelanjutan aplikasi Week 5–7, bukan project bisnis baru.
-Kamu dapat menjalankan atau mengirim folder Week 8 tanpa perlu mengambil source dari folder
-Week 7.
 
 Isi folder Week 8:
 
@@ -90,30 +85,6 @@ Hasil verifikasi lokal setelah perubahan Week 8 dicatat di
 yang sama pada Pull Request saat Week 8 menjadi root repository. Jika Week 8 tetap menjadi
 subfolder di repository portfolio, GitHub Actions hanya mengenali workflow di `.github/`
 root repository portfolio.
-
-## Cara push ke GitHub
-
-Jika folder Week 8 berada di dalam repository portfolio, dari root repository stage **hanya
-folder Week 8**. Dengan begitu perubahan ter-copy di Week 7 tidak ikut dalam commit:
-
-```powershell
-git status
-git add 08-week-8-mid-project-review
-git commit -m "feat(week8): review project tengah semester"
-git push -u origin feature/week8-mid-project-review
-```
-
-Setelah push, buat Pull Request `feature/week8-mid-project-review` → `develop` di GitHub
-(pastikan branch `develop` tersedia pada remote). Perintah `git add` di atas hanya men-stage
-folder Week 8; periksa `git status` sebelum commit.
-
-Jika ingin menjadikan Week 8 repository GitHub tersendiri, buka terminal di folder
-`08-week-8-mid-project-review` dan jalankan `git init`, hubungkan remote repository Week 8,
-lalu `git add .`, commit, dan push ke branch remote yang dipilih. Jangan menjalankan `git init`
-jika folder ini tetap bagian dari repository portfolio yang sudah memiliki `.git`.
-
-Perintah di atas hanya contoh alur; issue, review pasangan, dan merge tetap perlu dilakukan
-sesuai jobsheet. Jangan klaim PR sudah direview/di-merge sebelum benar-benar terjadi.
 
 ## Screenshot
 
