@@ -104,4 +104,3 @@ Flutter/Gradle yang dihasilkan di luar source project.
 - [Output awal review AI](docs/ai-review-output.md)
 - [Usulan AI vs keputusan final](docs/ai-review-vs-keputusan-final.md)
 - [Bukti analyze, format, dan test](docs/verification-results.md)
-- [Template Pull Request](../.github/pull_request_template.md)
