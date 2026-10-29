@@ -108,6 +108,24 @@ membulat. Tidak ada key atau data pribadi yang terlihat.
 
 ![Dialog API key kosong dengan gaya Week 8](screenshots/pengaturan-api-key.png)
 
+## Refleksi
+1. Fitur AI mana yang Anda integrasikan dan mengapa?
+
+Chat asisten kampus dengan jawaban streaming dari Gemini. Saya memilih chat karena pengguna dapat bertanya dengan bahasa sehari-hari dan melihat jawaban muncul bertahap, tanpa perlu menunggu seluruh respons selesai.
+
+2. Bagaimana Anda melindungi privasi pengguna saat menggunakan AI API?
+
+API key disimpan menggunakan flutter_secure_storage, bukan ditulis di source code. Aplikasi mengingatkan pengguna agar tidak mengirim data sensitif dan memblokir beberapa pola umum, seperti NIK, nomor telepon, email, dan kata terkait alamat. Riwayat chat hanya tersimpan sementara di memori aplikasi. Pemeriksaan otomatis ini tidak sempurna, jadi pengguna tetap perlu menghindari membagikan informasi pribadi.
+
+3. Fallback apa yang Anda sediakan jika layanan AI error?
+
+Aplikasi menampilkan pesan error yang sesuai, menyediakan opsi untuk mencoba kembali, dan mengarahkan pengguna ke catatan lokal sebagai alternatif. Request juga memiliki timeout agar aplikasi tidak terus-menerus menunggu respons.
+
+4. Satu hal yang Anda pelajari tentang UX fitur AI di mobile?
+
+Fitur AI sebaiknya memberi umpan balik selama menunggu. Streaming membantu pengguna melihat bahwa jawaban sedang diproses, sementara pesan privasi dan error yang jelas membantu pengguna memahami batasan layanan.
+
+
 ## Dokumen praktikum
 
 - [Prompt, contoh output, dan keputusan verifikasi](docs/ai-log.md)
