@@ -86,20 +86,27 @@ Hasil verifikasi di terminal folder ini:
 |---|---|
 | `flutter analyze` | Lulus — `No issues found!` |
 | `dart format --set-exit-if-changed lib test` | Lulus — 42 file diperiksa, tidak berubah. |
-| `flutter test` | Lulus — seluruh 24 test passed. |
+| `flutter test` | Lulus — seluruh 25 test passed. |
 
 Test AI memeriksa validasi prompt, pemblokiran data pribadi sebelum request,
-penggabungan potongan streaming menggunakan fake repository, dan timeout stream.
+penggabungan potongan streaming menggunakan fake repository, timeout stream, serta
+dialog API key yang dibuka dan ditutup tanpa error.
 Request live Gemini juga berhasil diuji di CPH2387 dengan prompt umum `Halo`.
 
 ## Screenshot
 
-Berikut screenshot yang diambil langsung dari aplikasi Minggu 10 pada perangkat
-Android. Uji chat menggunakan prompt umum `Halo`; key dan data pribadi tidak tampil.
+Screenshot halaman chat dan dialog API key diambil dari build terbaru di emulator
+Android, dengan komponen kartu dan warna teal mengikuti gaya Minggu 8. Respons Gemini
+live menggunakan prompt umum `Halo`; screenshot respons tersebut diambil sebelum
+penyesuaian visual dan ditampilkan sebagai bukti hasil uji. Semua screenshot dibuat
+berukuran 328 x 729 piksel dengan sudut membulat, mengikuti screenshot Minggu 8.
+Tidak ada key atau data pribadi yang terlihat.
 
-| Respons Gemini live | Halaman chat |
+| Respons Gemini live (tampilan sebelum penyesuaian visual) | Halaman chat terbaru |
 |---|---|
-| ![Respons live Gemini pada CPH2387](screenshots/uji-chat-live.png) | ![Halaman chat Asisten Kampus AI](screenshots/chat-awal.png) |
+| ![Respons live Gemini pada CPH2387](screenshots/uji-chat-live.png) | ![Halaman chat Asisten Kampus AI dengan gaya Week 8](screenshots/chat-awal.png) |
+
+![Dialog API key kosong dengan gaya Week 8](screenshots/pengaturan-api-key.png)
 
 ## Dokumen praktikum
 
