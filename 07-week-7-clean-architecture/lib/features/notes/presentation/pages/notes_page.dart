@@ -273,6 +273,7 @@ class _AddNoteDialog extends StatefulWidget {
 class _AddNoteDialogState extends State<_AddNoteDialog> {
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
+  String? _titleError;
 
   @override
   void dispose() {
@@ -285,7 +286,10 @@ class _AddNoteDialogState extends State<_AddNoteDialog> {
     final title = _titleController.text.trim();
     final body = _bodyController.text.trim();
 
-    if (title.isEmpty) return;
+    if (title.isEmpty) {
+      setState(() => _titleError = 'Judul tidak boleh kosong');
+      return;
+    }
 
     Navigator.of(context).pop(_NewNoteResult(title: title, body: body));
   }
@@ -300,9 +304,13 @@ class _AddNoteDialogState extends State<_AddNoteDialog> {
           children: [
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(
+              onChanged: (_) {
+                if (_titleError != null) setState(() => _titleError = null);
+              },
+              decoration: InputDecoration(
                 labelText: 'Judul',
                 hintText: 'Contoh: JS PeMob W5',
+                errorText: _titleError,
               ),
             ),
             const SizedBox(height: 12),
