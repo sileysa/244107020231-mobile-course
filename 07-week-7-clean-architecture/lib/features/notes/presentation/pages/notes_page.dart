@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/failures.dart';
 import '../../domain/entities/note.dart';
 import '../providers/notes_providers.dart';
 import '../widgets/note_tile.dart';
@@ -24,23 +25,24 @@ class _NotesPageState extends ConsumerState<NotesPage> {
   }
 
   Future<void> _addNote() async {
-    final result = await showDialog<_NewNoteResult>(
+    final added = await showDialog<bool>(
       context: context,
-      builder: (_) => const _AddNoteDialog(),
+      builder: (_) => _AddNoteDialog(
+        onSubmit: (title, body) async {
+          final result = await ref
+              .read(addNoteProvider)
+              .call(title: title, body: body);
+          final failure = result.failure;
+          if (failure is ValidationFailure) return failure.message;
+          if (failure != null && mounted) {
+            _showMessage('Gagal menyimpan catatan: ${failure.message}');
+          }
+          return null;
+        },
+      ),
     );
 
-    if (result == null) return;
-
-    final addResult = await ref
-        .read(addNoteProvider)
-        .call(title: result.title, body: result.body);
-    if (!mounted) return;
-
-    if (addResult.failure != null) {
-      _showMessage('Gagal menyimpan catatan: ${addResult.failure!.message}');
-      return;
-    }
-
+    if (added != true || !mounted) return;
     await _refresh();
   }
 
@@ -256,15 +258,11 @@ class _SyncStatus extends StatelessWidget {
   }
 }
 
-class _NewNoteResult {
-  const _NewNoteResult({required this.title, required this.body});
-
-  final String title;
-  final String body;
-}
-
 class _AddNoteDialog extends StatefulWidget {
-  const _AddNoteDialog();
+  const _AddNoteDialog({required this.onSubmit});
+
+  /// Mengembalikan pesan error untuk kolom judul, atau null jika berhasil.
+  final Future<String?> Function(String title, String body) onSubmit;
 
   @override
   State<_AddNoteDialog> createState() => _AddNoteDialogState();
@@ -274,6 +272,7 @@ class _AddNoteDialogState extends State<_AddNoteDialog> {
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
   String? _titleError;
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -282,16 +281,25 @@ class _AddNoteDialogState extends State<_AddNoteDialog> {
     super.dispose();
   }
 
-  void _submit() {
-    final title = _titleController.text.trim();
-    final body = _bodyController.text.trim();
+  Future<void> _submit() async {
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
 
-    if (title.isEmpty) {
-      setState(() => _titleError = 'Judul tidak boleh kosong');
+    final error = await widget.onSubmit(
+      _titleController.text,
+      _bodyController.text.trim(),
+    );
+    if (!mounted) return;
+
+    if (error != null) {
+      setState(() {
+        _titleError = error;
+        _isSaving = false;
+      });
       return;
     }
 
-    Navigator.of(context).pop(_NewNoteResult(title: title, body: body));
+    Navigator.of(context).pop(true);
   }
 
   @override
@@ -330,7 +338,10 @@ class _AddNoteDialogState extends State<_AddNoteDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Batal'),
         ),
-        FilledButton(onPressed: _submit, child: const Text('Simpan')),
+        FilledButton(
+          onPressed: _isSaving ? null : _submit,
+          child: const Text('Simpan'),
+        ),
       ],
     );
   }
