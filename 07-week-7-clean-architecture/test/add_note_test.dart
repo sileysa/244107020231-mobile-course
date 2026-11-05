@@ -12,13 +12,6 @@ void main() {
     expect(result.failure, isA<ValidationFailure>());
   });
 
-  test('AddNote menolak judul yang hanya berisi spasi', () async {
-    final result = await AddNote(FakeNoteRepository()).call(title: '   ');
-
-    expect(result.note, isNull);
-    expect(result.failure, isA<ValidationFailure>());
-  });
-
   test('AddNote meneruskan judul yang sudah di-trim', () async {
     final result = await AddNote(FakeNoteRepository())
         .call(title: '  Belajar Flutter  ');
@@ -26,4 +19,13 @@ void main() {
     expect(result.failure, isNull);
     expect(result.note!.title, 'Belajar Flutter');
   });
+
+  for (final input in [' ', '\t', '\n', ' \t\n ']) {
+    test('AddNote menolak judul whitespace saja: ${input.codeUnits}', () async {
+      final result = await AddNote(FakeNoteRepository()).call(title: input);
+
+      expect(result.note, isNull);
+      expect(result.failure, isA<ValidationFailure>());
+    });
+  }
 }
