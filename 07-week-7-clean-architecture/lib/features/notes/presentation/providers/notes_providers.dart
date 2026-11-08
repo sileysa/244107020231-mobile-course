@@ -10,6 +10,7 @@ import '../../domain/usecases/get_dirty_note_count.dart';
 import '../../domain/usecases/get_notes.dart';
 import '../../domain/usecases/sync_notes.dart';
 import '../../data/repositories/note_repository_impl.dart';
+import '../../domain/usecases/search_notes.dart';
 
 final noteRepositoryProvider = Provider<NoteRepository>((ref) {
   return NoteRepositoryImpl(openDb: openNotesDb);
@@ -33,6 +34,10 @@ final getDirtyNoteCountProvider = Provider<GetDirtyNoteCount>((ref) {
 
 final syncNotesProvider = Provider<SyncNotes>((ref) {
   return SyncNotes(ref.watch(noteRepositoryProvider));
+});
+
+final searchNotesProvider = Provider<SearchNotes>((ref) {
+  return const SearchNotes();
 });
 
 final notesProvider = FutureProvider<({List<Note> notes, Failure? failure})>((
