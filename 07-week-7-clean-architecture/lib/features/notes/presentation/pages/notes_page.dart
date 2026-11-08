@@ -17,6 +17,15 @@ class NotesPage extends ConsumerStatefulWidget {
 class _NotesPageState extends ConsumerState<NotesPage> {
   bool _isSyncing = false;
 
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _refresh() async {
     ref.invalidate(notesProvider);
     ref.invalidate(dirtyCountProvider);
@@ -90,6 +99,7 @@ class _NotesPageState extends ConsumerState<NotesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final searchNotes = ref.watch(searchNotesProvider);
     final notesAsync = ref.watch(notesProvider);
     final dirtyAsync = ref.watch(dirtyCountProvider);
     final dirtyCount = dirtyAsync.when(
@@ -122,6 +132,15 @@ class _NotesPageState extends ConsumerState<NotesPage> {
             isSyncing: _isSyncing,
             onSync: dirtyCount == null || dirtyCount == 0 ? null : _syncNotes,
           ),
+          _SearchField(
+            controller: _searchController,
+            hasQuery: _query.isNotEmpty,
+            onChanged: (value) => setState(() => _query = value),
+            onClear: () {
+              _searchController.clear();
+              setState(() => _query = '');
+            },
+          ),
           Expanded(
             child: notesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -142,13 +161,22 @@ class _NotesPageState extends ConsumerState<NotesPage> {
                   return const Center(child: Text('Belum ada catatan'));
                 }
 
+                final visible = searchNotes(notes, _query);
+                if (visible.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'Tidak ada catatan dengan judul "${_query.trim()}"',
+                    ),
+                  );
+                }
+
                 return RefreshIndicator(
                   onRefresh: _refresh,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(12),
-                    itemCount: notes.length,
+                    itemCount: visible.length,
                     itemBuilder: (context, index) {
-                      final note = notes[index];
+                      final note = visible[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: NoteTile(
@@ -196,6 +224,43 @@ class _LoadError extends StatelessWidget {
             const SizedBox(height: 12),
             FilledButton(onPressed: onRetry, child: const Text('Coba Lagi')),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  const _SearchField({
+    required this.controller,
+    required this.hasQuery,
+    required this.onChanged,
+    required this.onClear,
+  });
+
+  final TextEditingController controller;
+  final bool hasQuery;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          hintText: 'Cari judul catatan...',
+          prefixIcon: const Icon(Icons.search),
+          border: const OutlineInputBorder(),
+          suffixIcon: hasQuery
+              ? IconButton(
+                  tooltip: 'Hapus pencarian',
+                  icon: const Icon(Icons.clear),
+                  onPressed: onClear,
+                )
+              : null,
         ),
       ),
     );
