@@ -3,12 +3,26 @@ import 'package:week7_clean_architecture/features/notes/domain/entities/note.dar
 import 'package:week7_clean_architecture/features/notes/domain/repositories/note_repository.dart';
 
 class FakeNoteRepository implements NoteRepository {
-  FakeNoteRepository({List<Note> notes = const [], this.failure})
-      : notes = List.of(notes);
+  FakeNoteRepository({
+    List<Note> notes = const [],
+    this.failure,
+    this.deleteFailure,
+    this.markSyncedFailure,
+  }) : notes = List.of(notes);
 
   /// Salinan yang bisa diubah, supaya addNote/deleteNote berefek.
   final List<Note> notes;
+
+  /// Membuat SEMUA operasi gagal (termasuk fetch dan countDirty).
   final Failure? failure;
+
+  /// Hanya membuat deleteNote gagal.
+  final Failure? deleteFailure;
+
+  /// Hanya membuat markAllSynced gagal.
+  final Failure? markSyncedFailure;
+
+  int markSyncedCalls = 0;
 
   @override
   Future<({List<Note> notes, Failure? failure})> fetchNotes() async {
@@ -38,7 +52,8 @@ class FakeNoteRepository implements NoteRepository {
 
   @override
   Future<Failure?> deleteNote(int id) async {
-    if (failure != null) return failure;
+    final error = failure ?? deleteFailure;
+    if (error != null) return error;
     notes.removeWhere((note) => note.id == id);
     return null;
   }
@@ -52,5 +67,8 @@ class FakeNoteRepository implements NoteRepository {
   }
 
   @override
-  Future<Failure?> markAllSynced() async => failure;
+  Future<Failure?> markAllSynced() async {
+    markSyncedCalls++;
+    return failure ?? markSyncedFailure;
+  }
 }

@@ -44,7 +44,7 @@ void main() {
       tester,
     ) async {
       final repo = FakeNoteRepository(
-        failure: const ValidationFailure('Database tidak bisa dibuka'),
+        failure: const LocalFailure('Database tidak bisa dibuka'),
       );
       await pumpPage(tester, repo);
 
@@ -79,6 +79,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Tambah Catatan'), findsOneWidget); // dialog masih ada
+      expect(find.text('Judul tidak boleh kosong'), findsOneWidget);
       expect(repo.notes, isEmpty); // tidak ada yang tersimpan
     });
 
@@ -111,6 +112,84 @@ void main() {
 
       expect(find.text('Tambah Catatan'), findsNothing);
       expect(repo.notes, isEmpty);
+    });
+  });
+
+  group('NotesPage - hapus catatan', () {
+    testWidgets('menghapus catatan dari daftar', (tester) async {
+      final repo = FakeNoteRepository(notes: seed);
+      await pumpPage(tester, repo);
+
+      await tester.tap(find.byTooltip('Hapus').first); // 'Belanja bulanan'
+      await tester.pumpAndSettle();
+
+      expect(find.text('Belanja bulanan'), findsNothing);
+      expect(find.text('Tugas Flutter'), findsOneWidget);
+      expect(repo.notes.map((n) => n.id), [2]);
+    });
+
+    testWidgets('menampilkan snackbar saat hapus gagal', (tester) async {
+      final repo = FakeNoteRepository(
+        notes: seed,
+        deleteFailure: const LocalFailure('Database terkunci'),
+      );
+      await pumpPage(tester, repo);
+
+      await tester.tap(find.byTooltip('Hapus').first);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Gagal menghapus catatan: Database terkunci'),
+        findsOneWidget,
+      );
+      expect(find.text('Belanja bulanan'), findsOneWidget); // tetap ada
+    });
+  });
+
+  group('NotesPage - sinkronisasi', () {
+    final dirtySeed = [
+      Note(id: 1, title: 'A', updatedAt: DateTime(2026), dirty: true),
+    ];
+
+    testWidgets('tombol Sync nonaktif jika semua sudah tersinkron', (
+      tester,
+    ) async {
+      await pumpPage(tester, FakeNoteRepository(notes: seed));
+
+      expect(find.text('Semua catatan sudah tersinkron'), findsOneWidget);
+      final button = tester.widget<TextButton>(
+        find.widgetWithText(TextButton, 'Sync'),
+      );
+      expect(button.onPressed, isNull);
+    });
+
+    testWidgets('sinkronisasi berhasil menampilkan snackbar', (tester) async {
+      final repo = FakeNoteRepository(notes: dirtySeed);
+      await pumpPage(tester, repo);
+      expect(find.text('1 catatan belum tersinkron'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Sync'));
+      await tester.pump(); // mulai sinkronisasi
+      await tester.pump(const Duration(seconds: 2)); // lewati delay 1 detik
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sinkronisasi berhasil'), findsOneWidget);
+      expect(repo.markSyncedCalls, 1);
+    });
+
+    testWidgets('sinkronisasi gagal menampilkan pesan error', (tester) async {
+      final repo = FakeNoteRepository(
+        notes: dirtySeed,
+        markSyncedFailure: const LocalFailure('Disk penuh'),
+      );
+      await pumpPage(tester, repo);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Sync'));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sinkronisasi gagal: Disk penuh'), findsOneWidget);
     });
   });
 }
