@@ -36,27 +36,6 @@ Kondisi awal sebelum menambah test Minggu 12:
 
 Test yang sudah ada dari minggu sebelumnya: `add_note`, `get_notes`, `search_notes`, `note`, `login`, `chat_*`, `get_posts`, `post_model`, `core_format`, dan `notes_page_search`, beserta `test/fakes/fake_note_repository.dart` dan `fake_chat_repository.dart`.
 
-# Rancangan Skenario
-
-| No | Jenis | Skenario | Kategori |
-|----|-------|----------|----------|
-| 1 | Unit | AddNote menolak judul kosong dan judul whitespace saja | Gagal / tepi |
-| 2 | Unit | AddNote men-trim judul yang valid | Sukses |
-| 3 | Unit | DeleteNote menghapus catatan yang dipilih | Sukses |
-| 4 | Unit | DeleteNote mengembalikan failure dan tidak menghapus apa pun | Gagal |
-| 5 | Unit | SyncNotes tanpa catatan dirty tidak memanggil `markAllSynced` | Tepi |
-| 6 | Unit | SyncNotes menyinkronkan catatan dirty dan melaporkan jumlahnya | Sukses |
-| 7 | Unit | SyncNotes berhenti jika `countDirty` gagal | Gagal |
-| 8 | Unit | SyncNotes mengembalikan failure jika `markAllSynced` gagal | Gagal |
-| 9 | Widget | Halaman Notes: keadaan kosong, daftar, error muat, jumlah belum tersinkron | Sukses / gagal |
-| 10 | Widget | Tambah catatan: judul kosong ditolak, judul valid tersimpan (di-trim), batal | Sukses / gagal / tepi |
-| 11 | Widget | Hapus catatan: berhasil dan gagal (snackbar) | Sukses / gagal |
-| 12 | Widget | Sinkronisasi: tombol nonaktif, berhasil, gagal | Sukses / tepi / gagal |
-| 13 | Widget | Pencarian: filter, debounce 250 ms, tombol hapus pencarian | Sukses / tepi |
-| 14 | Integrasi | Tambah catatan lalu muncul di daftar | Sukses |
-| 15 | Integrasi | Judul kosong ditolak dengan pesan error | Gagal |
-| 16 | Integrasi | Tambah dua catatan lalu cari | Sukses |
-
 # Praktikum 1 — Unit Test
 
 Unit test menguji use case tanpa UI. Repository diganti `FakeNoteRepository`.
