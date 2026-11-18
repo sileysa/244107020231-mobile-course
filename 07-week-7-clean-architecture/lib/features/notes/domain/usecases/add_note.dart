@@ -10,7 +10,14 @@ class AddNote {
   Future<({Note? note, Failure? failure})> call({
     required String title,
     String body = '',
-  }) {
-    return _repository.addNote(title: title, body: body);
+  }) async {
+    final cleanTitle = title.trim();
+    if (cleanTitle.isEmpty) {
+      return (
+        note: null,
+        failure: const ValidationFailure('Judul tidak boleh kosong'),
+      );
+    }
+    return _repository.addNote(title: cleanTitle, body: body);
   }
 }

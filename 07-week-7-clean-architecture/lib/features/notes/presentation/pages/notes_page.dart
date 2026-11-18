@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/failures.dart';
 import '../../domain/entities/note.dart';
 import '../providers/notes_providers.dart';
 import '../widgets/note_tile.dart';
@@ -16,6 +17,15 @@ class NotesPage extends ConsumerStatefulWidget {
 class _NotesPageState extends ConsumerState<NotesPage> {
   bool _isSyncing = false;
 
+  final _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _refresh() async {
     ref.invalidate(notesProvider);
     ref.invalidate(dirtyCountProvider);
@@ -24,23 +34,24 @@ class _NotesPageState extends ConsumerState<NotesPage> {
   }
 
   Future<void> _addNote() async {
-    final result = await showDialog<_NewNoteResult>(
+    final added = await showDialog<bool>(
       context: context,
-      builder: (_) => const _AddNoteDialog(),
+      builder: (_) => _AddNoteDialog(
+        onSubmit: (title, body) async {
+          final result = await ref
+              .read(addNoteProvider)
+              .call(title: title, body: body);
+          final failure = result.failure;
+          if (failure is ValidationFailure) return failure.message;
+          if (failure != null && mounted) {
+            _showMessage('Gagal menyimpan catatan: ${failure.message}');
+          }
+          return null;
+        },
+      ),
     );
 
-    if (result == null) return;
-
-    final addResult = await ref
-        .read(addNoteProvider)
-        .call(title: result.title, body: result.body);
-    if (!mounted) return;
-
-    if (addResult.failure != null) {
-      _showMessage('Gagal menyimpan catatan: ${addResult.failure!.message}');
-      return;
-    }
-
+    if (added != true || !mounted) return;
     await _refresh();
   }
 
@@ -88,6 +99,7 @@ class _NotesPageState extends ConsumerState<NotesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final searchNotes = ref.watch(searchNotesProvider);
     final notesAsync = ref.watch(notesProvider);
     final dirtyAsync = ref.watch(dirtyCountProvider);
     final dirtyCount = dirtyAsync.when(
@@ -120,6 +132,15 @@ class _NotesPageState extends ConsumerState<NotesPage> {
             isSyncing: _isSyncing,
             onSync: dirtyCount == null || dirtyCount == 0 ? null : _syncNotes,
           ),
+          _SearchField(
+            controller: _searchController,
+            hasQuery: _query.isNotEmpty,
+            onChanged: (value) => setState(() => _query = value),
+            onClear: () {
+              _searchController.clear();
+              setState(() => _query = '');
+            },
+          ),
           Expanded(
             child: notesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -140,13 +161,22 @@ class _NotesPageState extends ConsumerState<NotesPage> {
                   return const Center(child: Text('Belum ada catatan'));
                 }
 
+                final visible = searchNotes(notes, _query);
+                if (visible.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'Tidak ada catatan dengan judul "${_query.trim()}"',
+                    ),
+                  );
+                }
+
                 return RefreshIndicator(
                   onRefresh: _refresh,
                   child: ListView.builder(
                     padding: const EdgeInsets.all(12),
-                    itemCount: notes.length,
+                    itemCount: visible.length,
                     itemBuilder: (context, index) {
-                      final note = notes[index];
+                      final note = visible[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: NoteTile(
@@ -194,6 +224,43 @@ class _LoadError extends StatelessWidget {
             const SizedBox(height: 12),
             FilledButton(onPressed: onRetry, child: const Text('Coba Lagi')),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  const _SearchField({
+    required this.controller,
+    required this.hasQuery,
+    required this.onChanged,
+    required this.onClear,
+  });
+
+  final TextEditingController controller;
+  final bool hasQuery;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        decoration: InputDecoration(
+          hintText: 'Cari judul catatan...',
+          prefixIcon: const Icon(Icons.search),
+          border: const OutlineInputBorder(),
+          suffixIcon: hasQuery
+              ? IconButton(
+                  tooltip: 'Hapus pencarian',
+                  icon: const Icon(Icons.clear),
+                  onPressed: onClear,
+                )
+              : null,
         ),
       ),
     );
@@ -256,15 +323,11 @@ class _SyncStatus extends StatelessWidget {
   }
 }
 
-class _NewNoteResult {
-  const _NewNoteResult({required this.title, required this.body});
-
-  final String title;
-  final String body;
-}
-
 class _AddNoteDialog extends StatefulWidget {
-  const _AddNoteDialog();
+  const _AddNoteDialog({required this.onSubmit});
+
+  /// Mengembalikan pesan error untuk kolom judul, atau null jika berhasil.
+  final Future<String?> Function(String title, String body) onSubmit;
 
   @override
   State<_AddNoteDialog> createState() => _AddNoteDialogState();
@@ -273,6 +336,8 @@ class _AddNoteDialog extends StatefulWidget {
 class _AddNoteDialogState extends State<_AddNoteDialog> {
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
+  String? _titleError;
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -281,13 +346,25 @@ class _AddNoteDialogState extends State<_AddNoteDialog> {
     super.dispose();
   }
 
-  void _submit() {
-    final title = _titleController.text.trim();
-    final body = _bodyController.text.trim();
+  Future<void> _submit() async {
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
 
-    if (title.isEmpty) return;
+    final error = await widget.onSubmit(
+      _titleController.text,
+      _bodyController.text.trim(),
+    );
+    if (!mounted) return;
 
-    Navigator.of(context).pop(_NewNoteResult(title: title, body: body));
+    if (error != null) {
+      setState(() {
+        _titleError = error;
+        _isSaving = false;
+      });
+      return;
+    }
+
+    Navigator.of(context).pop(true);
   }
 
   @override
@@ -300,9 +377,13 @@ class _AddNoteDialogState extends State<_AddNoteDialog> {
           children: [
             TextField(
               controller: _titleController,
-              decoration: const InputDecoration(
+              onChanged: (_) {
+                if (_titleError != null) setState(() => _titleError = null);
+              },
+              decoration: InputDecoration(
                 labelText: 'Judul',
                 hintText: 'Contoh: JS PeMob W5',
+                errorText: _titleError,
               ),
             ),
             const SizedBox(height: 12),
@@ -322,7 +403,10 @@ class _AddNoteDialogState extends State<_AddNoteDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Batal'),
         ),
-        FilledButton(onPressed: _submit, child: const Text('Simpan')),
+        FilledButton(
+          onPressed: _isSaving ? null : _submit,
+          child: const Text('Simpan'),
+        ),
       ],
     );
   }
