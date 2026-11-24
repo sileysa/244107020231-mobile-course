@@ -103,12 +103,13 @@ class AiService {
   Stream<String> askStream(String question) async* {
     final apiKey = await _readKey();
 
-    final request = http.Request(
-      'POST',
-      Uri.parse('$_baseUrl/$model:streamGenerateContent?alt=sse'),
-    )
-      ..headers.addAll(_headers(apiKey))
-      ..body = _body(question);
+    final request =
+        http.Request(
+            'POST',
+            Uri.parse('$_baseUrl/$model:streamGenerateContent?alt=sse'),
+          )
+          ..headers.addAll(_headers(apiKey))
+          ..body = _body(question);
 
     final response = await _client.send(request).timeout(_timeout);
 

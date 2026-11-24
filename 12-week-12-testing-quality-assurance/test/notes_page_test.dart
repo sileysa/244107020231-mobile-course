@@ -40,9 +40,7 @@ void main() {
       expect(find.text('Belum ada catatan'), findsNothing);
     });
 
-    testWidgets('menampilkan pesan error dan tombol coba lagi', (
-      tester,
-    ) async {
+    testWidgets('menampilkan pesan error dan tombol coba lagi', (tester) async {
       final repo = FakeNoteRepository(
         failure: const LocalFailure('Database tidak bisa dibuka'),
       );
@@ -53,10 +51,12 @@ void main() {
     });
 
     testWidgets('menampilkan jumlah catatan belum tersinkron', (tester) async {
-      final repo = FakeNoteRepository(notes: [
-        Note(id: 1, title: 'A', updatedAt: DateTime(2026), dirty: true),
-        Note(id: 2, title: 'B', updatedAt: DateTime(2026)),
-      ]);
+      final repo = FakeNoteRepository(
+        notes: [
+          Note(id: 1, title: 'A', updatedAt: DateTime(2026), dirty: true),
+          Note(id: 2, title: 'B', updatedAt: DateTime(2026)),
+        ],
+      );
       await pumpPage(tester, repo);
 
       expect(find.text('1 catatan belum tersinkron'), findsOneWidget);

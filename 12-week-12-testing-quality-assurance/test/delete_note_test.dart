@@ -20,16 +20,19 @@ void main() {
     expect(repo.notes.map((n) => n.id), [2]);
   });
 
-  test('DeleteNote mengembalikan failure dan tidak menghapus apa pun', () async {
-    final repo = FakeNoteRepository(
-      notes: seed,
-      deleteFailure: const LocalFailure('Database terkunci'),
-    );
+  test(
+    'DeleteNote mengembalikan failure dan tidak menghapus apa pun',
+    () async {
+      final repo = FakeNoteRepository(
+        notes: seed,
+        deleteFailure: const LocalFailure('Database terkunci'),
+      );
 
-    final failure = await DeleteNote(repo).call(1);
+      final failure = await DeleteNote(repo).call(1);
 
-    expect(failure, isA<LocalFailure>());
-    expect(failure!.message, 'Database terkunci');
-    expect(repo.notes, hasLength(2));
-  });
+      expect(failure, isA<LocalFailure>());
+      expect(failure!.message, 'Database terkunci');
+      expect(repo.notes, hasLength(2));
+    },
+  );
 }
