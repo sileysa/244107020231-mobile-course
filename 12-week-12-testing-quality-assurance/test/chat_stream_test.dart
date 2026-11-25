@@ -75,13 +75,16 @@ void main() {
   });
 
   group('SendChatMessage.stream', () {
-    test('pesan kosong menghasilkan ValidationFailure tanpa memanggil AI', () async {
-      final repo = FakeChatRepository();
-      final events = await SendChatMessage(repo).stream('   ').toList();
+    test(
+      'pesan kosong menghasilkan ValidationFailure tanpa memanggil AI',
+      () async {
+        final repo = FakeChatRepository();
+        final events = await SendChatMessage(repo).stream('   ').toList();
 
-      expect(events.single.failure, isA<ValidationFailure>());
-      expect(repo.asked, isEmpty);
-    });
+        expect(events.single.failure, isA<ValidationFailure>());
+        expect(repo.asked, isEmpty);
+      },
+    );
   });
 
   group('ChatNotifier (streaming)', () {

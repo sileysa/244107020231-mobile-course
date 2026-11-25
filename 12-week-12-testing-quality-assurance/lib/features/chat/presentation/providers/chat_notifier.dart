@@ -42,7 +42,10 @@ class ChatNotifier extends Notifier<ChatState> {
     if (clean.isEmpty || state.isLoading) return;
 
     state = state.copyWith(
-      messages: [...state.messages, ChatMessage(text: clean, fromUser: true)],
+      messages: [
+        ...state.messages,
+        ChatMessage(text: clean, fromUser: true),
+      ],
       clearFailure: true,
     );
     await _ask(clean);

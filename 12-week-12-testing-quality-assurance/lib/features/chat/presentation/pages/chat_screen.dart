@@ -35,9 +35,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _scrollToEnd() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scroll.hasClients) return;
-      _scroll.jumpTo(
-        _scroll.position.maxScrollExtent
-      );
+      _scroll.jumpTo(_scroll.position.maxScrollExtent);
     });
   }
 
@@ -112,8 +110,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       controller: _scroll,
                       padding: const EdgeInsets.all(12),
                       itemCount: chat.messages.length,
-                      itemBuilder: (_, i) =>
-                          _Bubble(message: chat.messages[i]),
+                      itemBuilder: (_, i) => _Bubble(message: chat.messages[i]),
                     ),
             ),
             if (chat.isLoading)

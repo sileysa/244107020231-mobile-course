@@ -64,11 +64,14 @@ void main() {
     }
   });
 
-  test('respons 200 yang formatnya salah menghasilkan NetworkFailure', () async {
-    final result = await _repo(_status(200, '{"foo":1}')).ask('halo');
-    expect(result.failure, isA<NetworkFailure>());
-    expect(result.reply, isNull);
-  });
+  test(
+    'respons 200 yang formatnya salah menghasilkan NetworkFailure',
+    () async {
+      final result = await _repo(_status(200, '{"foo":1}')).ask('halo');
+      expect(result.failure, isA<NetworkFailure>());
+      expect(result.reply, isNull);
+    },
+  );
 
   test('timeout menghasilkan NetworkFailure', () async {
     final client = MockClient((_) async => throw TimeoutException('lama'));

@@ -41,17 +41,20 @@ void main() {
     expect(state.isLoading, isFalse);
   });
 
-  test('retry mengulang pertanyaan tanpa menggandakan bubble pengguna', () async {
-    final repo = FakeChatRepository(failure: const NetworkFailure('gagal'));
-    final container = _container(repo);
-    final notifier = container.read(chatProvider.notifier);
+  test(
+    'retry mengulang pertanyaan tanpa menggandakan bubble pengguna',
+    () async {
+      final repo = FakeChatRepository(failure: const NetworkFailure('gagal'));
+      final container = _container(repo);
+      final notifier = container.read(chatProvider.notifier);
 
-    await notifier.send('halo');
-    await notifier.retry();
+      await notifier.send('halo');
+      await notifier.retry();
 
-    expect(repo.asked, ['halo', 'halo']);
-    expect(container.read(chatProvider).messages.length, 1);
-  });
+      expect(repo.asked, ['halo', 'halo']);
+      expect(container.read(chatProvider).messages.length, 1);
+    },
+  );
 
   test('clear mengosongkan percakapan', () async {
     final container = _container(FakeChatRepository());
