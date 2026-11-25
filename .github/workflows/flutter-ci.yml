@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: 12-week-12-testing-quality-assurance
+        working-directory: 13-week-13-ci-cd-automation
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -37,7 +37,7 @@ jobs:
         with:
           name: android-builds
           path: |
-            12-week-12-testing-quality-assurance/build/app/outputs/flutter-apk/app-release.apk
-            12-week-12-testing-quality-assurance/build/app/outputs/bundle/release/app-release.aab
+            13-week-13-ci-cd-automation/build/app/outputs/flutter-apk/app-release.apk
+            13-week-13-ci-cd-automation/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 7
