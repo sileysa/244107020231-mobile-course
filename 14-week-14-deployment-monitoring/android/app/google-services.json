@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "80903886434",
+    "project_id": "week14-deployment-monitoring",
+    "storage_bucket": "week14-deployment-monitoring.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80903886434:android:2d059a9e8ae6a8e4e3633b",
+        "android_client_info": {
+          "package_name": "edu.polinema.week7_clean_architecture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLMG88Sg9dbx0KQS6Bx4ACik0PqpPg06k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
