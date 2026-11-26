@@ -6,6 +6,7 @@ import 'features/chat/presentation/pages/chat_screen.dart';
 import 'features/notes/presentation/pages/note_detail_page.dart';
 import 'features/notes/presentation/pages/notes_page.dart';
 import 'features/posts/presentation/pages/posts_page.dart';
+import 'monitoring.dart';
 
 final appRouter = GoRouter(
   routes: [
@@ -42,10 +43,62 @@ class _Week7HomePageState extends State<Week7HomePage> {
 
   static const _pages = [NotesPage(), PostsPage(), ChatScreen()];
 
+  void _showMonitoringSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.analytics_outlined),
+              title: const Text('Kirim event uji (Analytics)'),
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await Monitoring.logBetaFeedbackSent();
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Event uji terkirim')),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.bug_report_outlined),
+              title: const Text('Kirim error non-fatal (Crashlytics)'),
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await Monitoring.recordTestNonFatal();
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Error uji terkirim')),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.warning_amber_outlined),
+              title: const Text('Paksa crash uji (fatal)'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                Monitoring.forceTestCrash();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _pages),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
+      floatingActionButton: FloatingActionButton.small(
+        heroTag: 'monitoring_fab',
+        tooltip: 'Uji monitoring',
+        onPressed: _showMonitoringSheet,
+        child: const Icon(Icons.monitor_heart_outlined),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
