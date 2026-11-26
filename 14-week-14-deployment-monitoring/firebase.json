@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"week14-deployment-monitoring","appId":"1:80903886434:android:2d059a9e8ae6a8e4e3633b","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"week14-deployment-monitoring","configurations":{"android":"1:80903886434:android:2d059a9e8ae6a8e4e3633b"}}}}}}
